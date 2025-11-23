@@ -1,0 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Light mode colors */
+    --color-primary-50: #f0f9ff;
+    --color-primary-100: #e0f2fe;
+    --color-primary-200: #bae6fd;
+    --color-primary-300: #7dd3fc;
+    --color-primary-400: #38bdf8;
+    --color-primary-500: #0ea5e9;
+    --color-primary-600: #0284c7;
+    --color-primary-700: #0369a1;
+    --color-primary-800: #075985;
+    --color-primary-900: #0c4a6e;
+    --color-primary-950: #082f49;
+
+    --color-surface: #ffffff;
+    --color-surface-elevated: #f9fafb;
+    --color-surface-border: #e5e7eb;
+
+    --color-text-primary: #111827;
+    --color-text-secondary: #6b7280;
+    --color-text-tertiary: #9ca3af;
+  }
+
+  .dark {
+    /* Dark mode colors */
+    --color-primary-50: #082f49;
+    --color-primary-100: #0c4a6e;
+    --color-primary-200: #075985;
+    --color-primary-300: #0369a1;
+    --color-primary-400: #0284c7;
+    --color-primary-500: #0ea5e9;
+    --color-primary-600: #38bdf8;
+    --color-primary-700: #7dd3fc;
+    --color-primary-800: #bae6fd;
+    --color-primary-900: #e0f2fe;
+    --color-primary-950: #f0f9ff;
+
+    --color-surface: #111827;
+    --color-surface-elevated: #1f2937;
+    --color-surface-border: #374151;
+
+    --color-text-primary: #f9fafb;
+    --color-text-secondary: #d1d5db;
+    --color-text-tertiary: #9ca3af;
+  }
+
+  html {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+      Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-surface text-text-primary;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
