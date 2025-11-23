@@ -1,0 +1,157 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum Visibility {
+  PRIVATE
+  UNLISTED
+  PUBLIC
+}
+
+enum ConfigurationType {
+  N_BODY_GRAVITY
+  COUPLED_OSCILLATOR
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  username     String    @unique
+  passwordHash String
+  role         Role      @default(USER)
+  displayName  String?
+  avatarUrl    String?
+  bio          String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  lastLoginAt  DateTime?
+
+  profile       Profile?
+  sessions      Session[]
+  simulations   Simulation[]
+  activityLogs  ActivityLog[]
+
+  @@index([email])
+  @@index([username])
+  @@index([role])
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
+  userAgent String?
+  ipAddress String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+  @@index([expiresAt])
+}
+
+model Profile {
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  preferredTheme    String   @default("system")
+  preferredControl  String   @default("slider")
+  emailNotifications Boolean @default(true)
+  publicProfile     Boolean  @default(false)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Simulation {
+  id                  String            @id @default(cuid())
+  ownerId             String
+  visibility          Visibility        @default(PRIVATE)
+  name                String
+  description         String?
+  slug                String            @unique
+  tags                String[]
+  configurationType   ConfigurationType @default(N_BODY_GRAVITY)
+
+  // Simulation parameters as JSON
+  parameters          Json
+
+  // Metadata for sharing and SEO
+  metaTitle           String?
+  metaDescription     String?
+  ogImageUrl          String?
+
+  viewCount           Int               @default(0)
+  likeCount           Int               @default(0)
+
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+  publishedAt         DateTime?
+
+  owner               User              @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  states              SimulationState[]
+  activityLogs        ActivityLog[]
+
+  @@index([ownerId])
+  @@index([visibility])
+  @@index([slug])
+  @@index([createdAt])
+  @@index([viewCount])
+  @@index([likeCount])
+  @@index([tags])
+}
+
+model SimulationState {
+  id           String   @id @default(cuid())
+  simulationId String
+  label        String
+  description  String?
+
+  // Serialized state vector (positions, velocities, etc.)
+  stateData    Json
+
+  // Metrics for this state
+  energy       Float?
+  errorMetric  Float?
+
+  isInteresting Boolean @default(false)
+  createdAt     DateTime @default(now())
+
+  simulation Simulation @relation(fields: [simulationId], references: [id], onDelete: Cascade)
+
+  @@index([simulationId])
+  @@index([isInteresting])
+  @@index([createdAt])
+}
+
+model ActivityLog {
+  id           String   @id @default(cuid())
+  userId       String?
+  simulationId String?
+  eventType    String
+  eventData    Json?
+  ipAddress    String?
+  userAgent    String?
+  createdAt    DateTime @default(now())
+
+  user       User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
+  simulation Simulation? @relation(fields: [simulationId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([simulationId])
+  @@index([eventType])
+  @@index([createdAt])
+}
