@@ -3,18 +3,5 @@
   "devCommand": "npm run dev",
   "installCommand": "npm install",
   "framework": null,
-  "outputDirectory": ".output/public",
-  "functions": {
-    "**/*.func/**": {
-      "runtime": "nodejs20.x",
-      "memory": 1024,
-      "maxDuration": 10
-    }
-  },
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/server"
-    }
-  ]
+  "outputDirectory": ".output/public"
 }
